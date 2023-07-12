@@ -1,9 +1,6 @@
 package com.example.sns.fixture;
 
-import com.example.sns.entity.UserEntity;
-
-import java.sql.Timestamp;
-import java.time.Instant;
+import com.example.sns.model.entity.UserEntity;
 
 public class UserEntityFixture {
 

@@ -1,7 +1,8 @@
 package com.example.sns.service;
 
-import com.example.sns.entity.User;
-import com.example.sns.entity.UserEntity;
+import com.example.sns.exception.ErrorCode;
+import com.example.sns.model.User;
+import com.example.sns.model.entity.UserEntity;
 import com.example.sns.exception.SnsApplicationException;
 import com.example.sns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +17,20 @@ public class UserService {
     private final UserEntityRepository repository;
 
     public User join(String userNane, String password) {
-        return null;
+        repository.findByUserName(userNane).ifPresent(
+                it -> {throw new SnsApplicationException(ErrorCode.DUPLICATED_USER_NAME, "유저이름이 중복되었습니다.");}
+        );
+
+        UserEntity userEntity = repository.save(UserEntity.of(userNane, password));
+        return User.fromEntity(userEntity);
     }
 
     // TODO: implement
     public String login(String userName, String password) {
-        UserEntity userEntity = repository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException());
+        UserEntity userEntity = repository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.DUPLICATED_USER_NAME, "유저이름이 중복되었습니다."));
 
         if (!userEntity.getPassword().equals(password)) {
-            throw new SnsApplicationException();
+            throw new SnsApplicationException(ErrorCode.DUPLICATED_USER_NAME, "유저이름이 중복되었습니다.");
         }
         return "";
     }
