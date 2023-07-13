@@ -5,6 +5,8 @@ spring:
     name: board
   profiles:
     active: local #prod #devel
+    include:
+      - jwt
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://localhost:3306/sns?useSSL=false&serverTimezone=UTC&characterEncoding=utf8

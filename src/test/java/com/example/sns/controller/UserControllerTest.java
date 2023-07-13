@@ -38,14 +38,14 @@ public class UserControllerTest {
 
     @Test
     public void 회원가입() throws Exception {
-        String userName = "himina1227";
-        String password = "test123!@#";
+        String userName = "name";
+        String password = "password";
 
         when(userService.join(userName, password)).thenReturn(mock(User.class));
+
         mockMvc.perform(post("/api/v1/users/join")
-                .contentType(MediaType.APPLICATION_JSON)
-                // TODO: add request body
-                .content(mapper.writeValueAsBytes(new UserJoinRequest(userName, password))))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsBytes(new UserJoinRequest("name", "password"))))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -82,13 +82,14 @@ public class UserControllerTest {
         String userName = "himina1227";
         String password = "test123!@#";
 
-        when(userService.login(userName, password)).thenThrow(new SnsApplicationException(ErrorCode.DUPLICATED_USER_NAME, "유저이름이 중복되었습니다."));
+        when(userService.login(userName, password)).thenThrow(new SnsApplicationException(ErrorCode.USER_NOT_FOUND));
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         // TODO: add request body
                         .content(mapper.writeValueAsBytes(new UserLoginRequest(userName, password))))
                 .andDo(print())
                 .andExpect(status().isNotFound());
+//        .andExpect(status().is(ErrorCode.USER_NOT_FOUND.getStatus().value()));
     }
 
     @Test
@@ -97,7 +98,7 @@ public class UserControllerTest {
         String userName = "name";
         String password = "password";
 
-        when(userService.login(userName, password)).thenThrow(new SnsApplicationException(ErrorCode.DUPLICATED_USER_NAME, "유저이름이 중복되었습니다."));
+        when(userService.login(userName, password)).thenThrow(new SnsApplicationException(ErrorCode.INVALID_PASSWORD));
 
         mockMvc.perform(post("/api/v1/users/login")
                         .contentType(MediaType.APPLICATION_JSON)
