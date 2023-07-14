@@ -1,5 +1,6 @@
 package com.example.sns.config;
 
+import com.example.sns.config.filter.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -25,7 +26,8 @@ public class SecurityConfig {
             .authorizeHttpRequests((t) -> t
                     .requestMatchers("/**").permitAll()
                     .anyRequest().authenticated())
-            .sessionManagement((t) -> t.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            .sessionManagement((t) -> t.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         // TODO ExceptionHandling and authenticatonEntryPoint
         return http.build();

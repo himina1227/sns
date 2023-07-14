@@ -10,4 +10,6 @@ public class PostWriteRequest {
     private String title;
 
     private String name;
+
+    private String body;
 }

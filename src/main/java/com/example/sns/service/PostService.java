@@ -23,7 +23,8 @@ public class PostService {
     public void create(String title, String body, String userName) {
         UserEntity userEntity = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("userName is %s", userName)));
-        PostEntity postEntity = PostEntity.of(title, body, userEntity);
+//        PostEntity postEntity = PostEntity.of(title, body, userEntity);
+        PostEntity postEntity = repository.save(PostEntity.of(title, body, userEntity));
         repository.save(postEntity);
     }
 }
