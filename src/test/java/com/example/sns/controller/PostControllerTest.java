@@ -53,13 +53,13 @@ public class PostControllerTest {
 
 
     @Test
-    @WithAnonymousUser
+    @WithMockUser // 이렇게 안할경우 authentication.getName() -> NPE 발생한다.
     void 포스트수정() throws Exception {
         String title = "title";
         String body = "body";
 
-        when(postService.modify(any(), any(), eq(title), eq(body)))
-                .thenReturn(Post.fromEntity(PostEntityFixture.get("username", 1, 1)));
+//        when(postService.modify(any(), any(), eq(title), eq(body)))
+//                .thenReturn(Post.fromEntity(PostEntityFixture.get("username", 1, 1)));
         mockMvc.perform(put("/api/v1/posts/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsBytes(new PostModifyRequest("title", "body"))))
