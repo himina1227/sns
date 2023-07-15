@@ -10,7 +10,7 @@ public class PostEntityFixture {
         user.setId(userId);
         user.setUserName(userName);
         PostEntity postEntity = new PostEntity();
-        postEntity.setId(1);
+        postEntity.setId(postId);
         postEntity.setUser(user);
         postEntity.setTitle("title");
         postEntity.setBody("body");

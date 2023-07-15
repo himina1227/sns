@@ -44,10 +44,11 @@ public class PostService {
         return Post.fromEntity(repository.saveAndFlush(postEntity));
     }
 
-    public void delete(Integer userId, Integer postId) {
+    public void delete(String userName, Integer postId) {
+        UserEntity userEntity = userRepository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
         PostEntity postEntity = repository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
-        if (!Objects.equals(postEntity.getUser().getId(), userId)) {
-            throw new SnsApplicationException(ErrorCode.INVALID_PERMISSION, String.format("user %s has no permission with post %d", userId, postId));
+        if (!Objects.equals(postEntity.getUser().getId(), userEntity.getId())) {
+            throw new SnsApplicationException(ErrorCode.INVALID_PERMISSION, String.format("user %s has no permission with post %d", userName, postId));
         }
         repository.delete(postEntity);
     }

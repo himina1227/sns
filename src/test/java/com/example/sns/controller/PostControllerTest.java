@@ -4,6 +4,8 @@ import com.example.sns.controller.request.PostModifyRequest;
 import com.example.sns.controller.request.PostWriteRequest;
 import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnsApplicationException;
+import com.example.sns.fixture.PostEntityFixture;
+import com.example.sns.model.Post;
 import com.example.sns.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -49,6 +51,23 @@ public class PostControllerTest {
                 .andExpect(status().isOk());
     }
 
+
+    @Test
+    @WithAnonymousUser
+    void 포스트수정() throws Exception {
+        String title = "title";
+        String body = "body";
+
+        when(postService.modify(any(), any(), eq(title), eq(body)))
+                .thenReturn(Post.fromEntity(PostEntityFixture.get("username", 1, 1)));
+        mockMvc.perform(put("/api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(new PostModifyRequest("title", "body"))))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
     @Test
     @WithAnonymousUser
     void 포스트수정시_로그인한상태가_아니라면_에러발생() throws Exception {
@@ -69,5 +88,37 @@ public class PostControllerTest {
                         .content(objectMapper.writeValueAsBytes(new PostModifyRequest("title", "body"))))
                 .andDo(print())
                 .andExpect(status().is(ErrorCode.INVALID_PERMISSION.getStatus().value()));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void 포스트삭제시_로그인한상태가_아니라면_에러발생() throws Exception {
+        mockMvc.perform(delete("/api/v1/posts/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(ErrorCode.INVALID_TOKEN.getStatus().value()));
+    }
+
+    @Test
+    @WithMockUser
+    void 포스트삭제시_본인이_작성한_글이_아니라면_에러발생() throws Exception {
+        doThrow(new SnsApplicationException(ErrorCode.INVALID_PERMISSION)).when(postService).delete(any(), eq(1));
+        mockMvc.perform(delete("/api/v1/posts/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(ErrorCode.INVALID_PERMISSION.getStatus().value()));
+    }
+
+    @Test
+    @WithMockUser
+    void 포스트삭제시_수정하려는글이_없다면_에러발생() throws Exception {
+        doThrow(new SnsApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).delete(any(), eq(1));
+
+        mockMvc.perform(delete("/api/v1/posts/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
     }
 }
