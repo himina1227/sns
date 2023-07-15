@@ -31,10 +31,11 @@ public class PostService {
         repository.save(postEntity);
     }
 
-    public Post modify(Integer userId, Integer postId, String title, String body) {
+    public Post modify(String userName, Integer postId, String title, String body) {
         PostEntity postEntity = repository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
-        if (!Objects.equals(postEntity.getUser().getId(), userId)) {
-            throw new SnsApplicationException(ErrorCode.INVALID_PERMISSION, String.format("user %s has no permission with post %d", userId, postId));
+        UserEntity user = userRepository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
+        if (!Objects.equals(postEntity.getUser().getId(), user.getId())) {
+            throw new SnsApplicationException(ErrorCode.INVALID_PERMISSION, String.format("user %s has no permission with post %d", userName, postId));
         }
 
         postEntity.setTitle(title);

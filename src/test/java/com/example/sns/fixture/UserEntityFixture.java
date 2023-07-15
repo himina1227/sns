@@ -17,4 +17,14 @@ public class UserEntityFixture {
         entity.setRegisteredAt(Timestamp.from(Instant.now()));
         return entity;
     }
+
+    public static UserEntity get(String userName, String password, Integer userId) {
+        UserEntity entity = new UserEntity();
+        entity.setId(userId);
+        entity.setUserName(userName);
+        entity.setPassword(password);
+        entity.setRole(UserRole.USER);
+        entity.setRegisteredAt(Timestamp.from(Instant.now()));
+        return entity;
+    }
 }
