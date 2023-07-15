@@ -43,7 +43,7 @@ public class PostControllerTest {
     void 포스트작성() throws Exception {
         mockMvc.perform(post("/api/v1/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(new PostWriteRequest("title", "body"))))
+                        .content(objectMapper.writeValueAsBytes(new PostWriteRequest("title", "name", "body"))))
                 .andDo(print())
                 .andExpect(status().isOk());
     }

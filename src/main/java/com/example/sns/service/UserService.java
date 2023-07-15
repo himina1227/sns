@@ -1,12 +1,13 @@
 package com.example.sns.service;
 
 import com.example.sns.exception.ErrorCode;
+import com.example.sns.exception.SnsApplicationException;
 import com.example.sns.model.User;
 import com.example.sns.model.entity.UserEntity;
-import com.example.sns.exception.SnsApplicationException;
 import com.example.sns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserEntityRepository repository;
-    private final PasswordEncoder passwordEncoder;
+
+    private final BCryptPasswordEncoder passwordEncoder;
+
     @Value("${jwt.secret-key}")
     private String secretKey;
+
     @Value("${jwt.token.expired-time-ms}")
     private Long expiredTimeMs;
 
