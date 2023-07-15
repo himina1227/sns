@@ -45,11 +45,6 @@ public class JwtTokenUtils {
         Claims claims = Jwts.claims();
         claims.put("username", username);
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expireTime))
-                .signWith(getSigningKey(key), SignatureAlgorithm.HS256)
-                .compact();
+        return Jwts.builder().setClaims(claims).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + expireTime)).signWith(getSigningKey(key), SignatureAlgorithm.HS256).compact();
     }
 }

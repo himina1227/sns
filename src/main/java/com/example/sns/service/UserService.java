@@ -25,7 +25,9 @@ public class UserService {
 
     public User join(String userNane, String password) {
         repository.findByUserName(userNane).ifPresent(
-                it -> {throw new SnsApplicationException(ErrorCode.DUPLICATED_USER_NAME, "유저이름이 중복되었습니다.");}
+                it -> {
+                    throw new SnsApplicationException(ErrorCode.DUPLICATED_USER_NAME, "유저이름이 중복되었습니다.");
+                }
         );
 
         UserEntity userEntity = repository.save(UserEntity.of(userNane, passwordEncoder.encode(password)));
@@ -41,5 +43,9 @@ public class UserService {
             throw new SnsApplicationException(ErrorCode.INVALID_PASSWORD);
         }
         return "";
+    }
+
+    public User loadUserByUsername(String userName) {
+        return repository.findByUserName(userName).map(User::fromEntity).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND));
     }
 }
