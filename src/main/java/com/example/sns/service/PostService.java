@@ -9,6 +9,8 @@ import com.example.sns.repository.PostEntityRepository;
 import com.example.sns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,4 +55,13 @@ public class PostService {
         repository.delete(postEntity);
     }
 
+    public Page<Post> list(Pageable pageable) {
+        return repository.findAll(pageable).map(Post::fromEntity);
+    }
+
+    public Page<Post> my(String userName, Pageable pageable) {
+        UserEntity userEntity = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
+        return repository.findAllByUser(userEntity, pageable).map(Post::fromEntity);
+    }
 }

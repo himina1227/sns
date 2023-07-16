@@ -2,12 +2,12 @@ package com.example.sns.controller;
 
 import com.example.sns.controller.request.PostModifyRequest;
 import com.example.sns.controller.request.PostWriteRequest;
+import com.example.sns.controller.response.PostResponse;
 import com.example.sns.controller.response.Response;
-import com.example.sns.model.entity.UserEntity;
-import com.example.sns.repository.PostEntityRepository;
-import com.example.sns.repository.UserEntityRepository;
 import com.example.sns.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,5 +35,10 @@ public class PostController {
         postService.delete(authentication.getName(), postId);
         return Response.success();
 
+    }
+
+    @GetMapping("/my")
+    public Response<Page<PostResponse>> list(Pageable pageable, Authentication authentication) {
+        return Response.success(postService.my(authentication.getName(), pageable).map(PostResponse::fromPost));
     }
 }

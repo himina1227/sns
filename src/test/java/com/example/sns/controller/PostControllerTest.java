@@ -55,8 +55,8 @@ public class PostControllerTest {
     @Test
     @WithMockUser // 이렇게 안할경우 authentication.getName() -> NPE 발생한다.
     void 포스트수정() throws Exception {
-        String title = "title";
-        String body = "body";
+//        String title = "title";
+//        String body = "body";
 
 //        when(postService.modify(any(), any(), eq(title), eq(body)))
 //                .thenReturn(Post.fromEntity(PostEntityFixture.get("username", 1, 1)));
@@ -116,6 +116,52 @@ public class PostControllerTest {
         doThrow(new SnsApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).delete(any(), eq(1));
 
         mockMvc.perform(delete("/api/v1/posts/1")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
+    }
+
+    @Test
+    @WithMockUser
+    void 피드목록() throws Exception {
+        when(postService.list(any())).thenReturn(Page.empty());
+
+        mockMvc.perform(get("/api/v1/posts")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void 피드목록요청시_로그인하지_않을경우() throws Exception {
+        when(postService.list(any())).thenReturn(Page.empty());
+        mockMvc.perform(get("/api/v1/posts")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
+    }
+
+    @Test
+    @WithMockUser
+    void 내피드목록() throws Exception {
+        when(postService.my(any(), any())).thenReturn(Page.empty());
+
+        mockMvc.perform(get("/api/v1/posts/my")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
+    }
+
+    @Test
+    @WithAnonymousUser
+    void 내피드목록요청시_로그인하지_않을경우() throws Exception {
+        when(postService.my(any(), any())).thenReturn(Page.empty());
+        mockMvc.perform(get("/api/v1/posts/my")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
