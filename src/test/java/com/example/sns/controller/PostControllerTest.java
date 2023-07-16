@@ -126,12 +126,11 @@ public class PostControllerTest {
     @WithMockUser
     void 피드목록() throws Exception {
         when(postService.list(any())).thenReturn(Page.empty());
-
         mockMvc.perform(get("/api/v1/posts")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -142,7 +141,7 @@ public class PostControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -154,7 +153,7 @@ public class PostControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -165,6 +164,6 @@ public class PostControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is(ErrorCode.POST_NOT_FOUND.getStatus().value()));
+                .andExpect(status().isUnauthorized());
     }
 }
