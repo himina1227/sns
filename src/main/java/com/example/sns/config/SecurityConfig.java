@@ -29,9 +29,10 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests((t) -> t
                     .requestMatchers("/api/*/users/join", "/api/*/users/login").permitAll()
-                    .anyRequest().authenticated())
+                    .requestMatchers("/api/**").authenticated()
+                    .anyRequest().permitAll())
             .sessionManagement((t) -> t.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//            .addFilterBefore(new JwtTokenFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtTokenFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling((t) -> t.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         return http.build();

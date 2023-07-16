@@ -64,4 +64,8 @@ public class PostService {
                 .orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
         return repository.findAllByUser(userEntity, pageable).map(Post::fromEntity);
     }
+
+    public void like(Integer postId, String userName) {
+
+    }
 }
