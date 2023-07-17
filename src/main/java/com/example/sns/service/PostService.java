@@ -86,4 +86,8 @@ public class PostService {
 //        List<LikeEntity> likeEntities = likeRepository.findAllByPost(postEntity);
 //        return likeEntities.size();
     }
+
+    public void comment(Integer postId, String userName) {
+
+    }
 }
