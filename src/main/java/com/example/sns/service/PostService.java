@@ -1,18 +1,13 @@
 package com.example.sns.service;
 
 import com.example.sns.controller.request.PostCommentRequest;
+import com.example.sns.enums.AlarmType;
 import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnsApplicationException;
 import com.example.sns.model.Comment;
 import com.example.sns.model.Post;
-import com.example.sns.model.entity.CommentEntity;
-import com.example.sns.model.entity.LikeEntity;
-import com.example.sns.model.entity.PostEntity;
-import com.example.sns.model.entity.UserEntity;
-import com.example.sns.repository.CommentEntityRepository;
-import com.example.sns.repository.LikeEntityRepository;
-import com.example.sns.repository.PostEntityRepository;
-import com.example.sns.repository.UserEntityRepository;
+import com.example.sns.model.entity.*;
+import com.example.sns.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,6 +28,7 @@ public class PostService {
     private final UserEntityRepository userRepository;
     private final LikeEntityRepository likeRepository;
     private final CommentEntityRepository commentRepository;
+    private final AlarmEntityRepository alarmEntityRepository;
 
     public void create(String title, String body, String userName) {
         UserEntity userEntity = userRepository.findByUserName(userName)
@@ -83,6 +79,7 @@ public class PostService {
         });
 
         likeRepository.save(LikeEntity.of(userEntity, postEntity));
+        alarmEntityRepository.save(AlarmEntity.of(AlarmType.NEW_COMMENT_ON_POST, null, userEntity));
     }
 
     public int likeCount(Integer postId, String userName) {
@@ -96,6 +93,7 @@ public class PostService {
         UserEntity userEntity = userRepository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
         PostEntity postEntity = repository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
         commentRepository.save(CommentEntity.of(userEntity, postEntity, comment));
+        alarmEntityRepository.save(AlarmEntity.of(AlarmType.NEW_COMMENT_ON_POST, null, userEntity));
     }
 
     public Page<Comment> getComments(Integer postId, Pageable pageable) {

@@ -13,7 +13,7 @@ import java.time.Instant;
 @Setter
 @Getter
 @Entity
-@Table(name = "\"user\"")
+@Table(name = "\"user\"", indexes = @Index(name = "user_id_idx", columnList = "user_id"))
 @SQLDelete(sql = "UPDATE \"user\" SET removed_at = NOW() WHERE id=?")
 @Where(clause = "removed_at is NULL")
 public class UserEntity {
