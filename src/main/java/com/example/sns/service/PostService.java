@@ -1,11 +1,15 @@
 package com.example.sns.service;
 
+import com.example.sns.controller.request.PostCommentRequest;
 import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnsApplicationException;
+import com.example.sns.model.Comment;
 import com.example.sns.model.Post;
+import com.example.sns.model.entity.CommentEntity;
 import com.example.sns.model.entity.LikeEntity;
 import com.example.sns.model.entity.PostEntity;
 import com.example.sns.model.entity.UserEntity;
+import com.example.sns.repository.CommentEntityRepository;
 import com.example.sns.repository.LikeEntityRepository;
 import com.example.sns.repository.PostEntityRepository;
 import com.example.sns.repository.UserEntityRepository;
@@ -28,6 +32,7 @@ public class PostService {
     private final PostEntityRepository repository;
     private final UserEntityRepository userRepository;
     private final LikeEntityRepository likeRepository;
+    private final CommentEntityRepository commentRepository;
 
     public void create(String title, String body, String userName) {
         UserEntity userEntity = userRepository.findByUserName(userName)
@@ -87,7 +92,15 @@ public class PostService {
 //        return likeEntities.size();
     }
 
-    public void comment(Integer postId, String userName) {
+    public void comment(Integer postId, String comment, String userName) {
+        UserEntity userEntity = userRepository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
+        PostEntity postEntity = repository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
+        commentRepository.save(CommentEntity.of(userEntity, postEntity, comment));
+    }
 
+    public Page<Comment> getComments(Integer postId, Pageable pageable) {
+        PostEntity postEntity = repository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
+        Page<CommentEntity> comments = commentRepository.findAllByPost(postEntity, pageable);
+        return comments.map(Comment::fromEntity);
     }
 }
