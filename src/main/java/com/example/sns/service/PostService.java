@@ -3,8 +3,10 @@ package com.example.sns.service;
 import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnsApplicationException;
 import com.example.sns.model.Post;
+import com.example.sns.model.entity.LikeEntity;
 import com.example.sns.model.entity.PostEntity;
 import com.example.sns.model.entity.UserEntity;
+import com.example.sns.repository.LikeEntityRepository;
 import com.example.sns.repository.PostEntityRepository;
 import com.example.sns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -24,6 +27,7 @@ public class PostService {
 
     private final PostEntityRepository repository;
     private final UserEntityRepository userRepository;
+    private final LikeEntityRepository likeRepository;
 
     public void create(String title, String body, String userName) {
         UserEntity userEntity = userRepository.findByUserName(userName)
@@ -66,6 +70,20 @@ public class PostService {
     }
 
     public void like(Integer postId, String userName) {
+        UserEntity userEntity = userRepository.findByUserName(userName).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not found", userName)));
+        PostEntity postEntity = repository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
 
+        likeRepository.findByUserAndPost(userEntity, postEntity).ifPresent(it -> {
+            throw new SnsApplicationException(ErrorCode.ALREADY_LIKED_POST, String.format("userName %s already like post %d", userName, postId));
+        });
+
+        likeRepository.save(LikeEntity.of(userEntity, postEntity));
+    }
+
+    public int likeCount(Integer postId, String userName) {
+        PostEntity postEntity = repository.findById(postId).orElseThrow(() -> new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("postId is %d", postId)));
+        return likeRepository.countByPost(postEntity);
+//        List<LikeEntity> likeEntities = likeRepository.findAllByPost(postEntity);
+//        return likeEntities.size();
     }
 }
