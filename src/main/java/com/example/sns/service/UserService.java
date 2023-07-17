@@ -7,6 +7,8 @@ import com.example.sns.model.entity.UserEntity;
 import com.example.sns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,5 +53,9 @@ public class UserService {
 
     public User loadUserByUsername(String userName) {
         return repository.findByUserName(userName).map(User::fromEntity).orElseThrow(() -> new SnsApplicationException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    public Page<Void> alarmList(String userName, Pageable pageable) {
+        return Page.empty();
     }
 }
