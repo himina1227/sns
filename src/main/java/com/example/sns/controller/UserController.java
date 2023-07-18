@@ -6,7 +6,9 @@ import com.example.sns.controller.response.AlarmResponse;
 import com.example.sns.controller.response.Response;
 import com.example.sns.controller.response.UserJoinResponse;
 import com.example.sns.controller.response.UserLoginResponse;
+import com.example.sns.model.User;
 import com.example.sns.service.UserService;
+import com.example.sns.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +35,7 @@ public class UserController {
 
     @GetMapping("/alarm")
     public Response<Page<AlarmResponse>> alarms(Pageable pageable, Authentication authentication) {
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class);
         return Response.success(userService.alarmList(authentication.getName(), pageable).map(AlarmResponse::fromAlarm));
     }
 }
